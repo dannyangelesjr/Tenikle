@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify BuyButton</title>
+
+    <link rel="stylesheet" href="customstyles.css">
+    
+    <link href="http://sdks.shopifycdn.com/buy-button/latest/buybutton.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <!-- <div id="myModal" class="modal"> -->
+            <div class="frame-content">
+                <div
+                    class="fixed flex overflow-auto bg-black bg-opacity-50 justify-center z-1000000 left-0 top-0 w-full h-full pb-70 md:pb-none lg:py-80">
+                    <div id="modal-container"
+                        class="OfferId-160817 Target-Product-Id-4958989615190 Main-Window Modal relative bg-white flex-grow w-full mb-auto md:mt-auto flex flex-col md:mx-20 max-w-lg lg:my-auto">
+                        <div class=""><button id="btnClose"
+                                class="absolute right-15 flex items-center justify-center top-15 bg-none border-none z-30 text-grey-3 cursor-pointer hover:text-grey-2 focus:text-grey-1 transition-all duration-100 Close-Button"
+                                data-cy="close-button"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M8.13101 7.00005L13.1654 1.96565C13.4782 1.65285 13.4782 1.14725 13.1654 0.834454C12.8526 0.521654 12.347 0.521654 12.0342 0.834454L6.99981 5.86885L1.96541 0.834454C1.65261 0.521654 1.14701 0.521654 0.834209 0.834454C0.521409 1.14725 0.521409 1.65285 0.834209 1.96565L5.86861 7.00005L0.834209 12.0345C0.521409 12.3473 0.521409 12.8529 0.834209 13.1657C0.990209 13.3217 1.19501 13.4001 1.39981 13.4001C1.60461 13.4001 1.80941 13.3217 1.96541 13.1657L6.99981 8.13125L12.0342 13.1657C12.1902 13.3217 12.395 13.4001 12.5998 13.4001C12.8046 13.4001 13.0094 13.3217 13.1654 13.1657C13.4782 12.8529 13.4782 12.3473 13.1654 12.0345L8.13101 7.00005Z"
+                                        fill="currentColor"></path>
+                                </svg></button>
+                            <div class="Header">
+                                <div class="z-20 py-20 px-45">
+                                    <h1 class="Title text-lg text-center max-w-md m-auto lg:text-xl text-grey-1">
+                                        Exclusive
+                                        Offer: Get 20% OFF additional Tenikles for friends &amp; family.</h1>
+                                </div>
+                            </div>
+                            <section class="pb-none Main-Content">
+                                <div data-simplebar="init" class="h-full">
+                                    <div class="simplebar-wrapper" style="margin: 0px;">
+                                        <div class="simplebar-height-auto-observer-wrapper">
+                                            <div class="simplebar-height-auto-observer"></div>
+                                        </div>
+                                        <div class="simplebar-mask">
+                                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                                <div class="simplebar-content-wrapper"
+                                                    style="height: auto; overflow: hidden;">
+                                                    <div class="simplebar-content" style="padding: 0px;">
+                                                        <div class="">
+                                                            <div
+                                                                class="Product-Line flex p-15 items-center md:px-25 relative z-10 bg-primary-5">
+                                                                <span class="mr-15 relative bg-grey-5 w-50"
+                                                                    id="productImage">
+                                                                    <!-- <img src="//cdn.shopify.com/s/files/1/1339/2529/products/MAIN-IMAGE-1_medium.jpg?v=1637712347" alt="Product" class="block w-50 h-50 object-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100%" height="100%" class="animated-checkmark--finished absolute top-0 rounded-full block stroke-5 stroke-white z-20 -mt-8 -mr-8 right-0 w-15 h-15"><circle class="checkmark__circle stroke-2 stroke-green" cx="26" cy="26" r="25" fill="none"></circle><path class="checkmark__check origin-center" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path></svg> -->
+                                                                </span>
+                                                                <div>
+                                                                    <div
+                                                                        class="Product-Name text-md font-semibold text-grey-1">
+                                                                        <span
+                                                                            class="text-grey-2 font-normal text-md"></span>
+                                                                        <span id="productName"></span>
+                                                                        <!-- Tenikle® 360° -->
+                                                                    </div><span
+                                                                        class="Product-Price text-grey-1 font-normal text-md"><span>
+                                                                            <span class="money">
+                                                                                <span id="productPrice"></span>
+                                                                                <!-- $ 45.00 USD -->
+                                                                            </span></span></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <ul class="Upsell-List list-none md:ml-50 md:justify-center"
+                                                            style="grid-template-columns: repeat(1, 220px);">
+                                                            <li id="4958989615190160817" data-offer-id="160817"
+                                                                class="Product-Id-4958989615190 ListItem-Offer-Id-160817 md:border-l md:relative md:last:border-0 md:first:pt-25 last:pb-20 md:last:pb-none Upsell-Item">
+                                                                <div data-cy="offer-product"
+                                                                    class="mt-25 px-15 md:flex md:justify-between md:items-start md:mt-none  md:pr-25 md:pl-15 md:pb-20">
+                                                                    <div
+                                                                        class="flex justify-start items-center mb-10 md:items-start md:mb-none relative Offer-Info-Wrapper">
+                                                                        <div
+                                                                            class="Offer-Icon-Wrapper relative pr-15 cursor-pointer">
+                                                                            <div
+                                                                                class="Offer-Icon h-mobileImageSmall md:h-desktopImageSmall w-mobileImageSmall md:w-desktopImageSmall relative flex flex-col justify-center overflow-x-hidden z-10 Offer-Icon-clickable">
+                                                                                <span id="productImageUpsell"></span>
+                                                                                <!-- <img src="//cdn.shopify.com/s/files/1/1339/2529/products/MAIN-IMAGE-1_medium.jpg?v=1637712347" alt="Product" class="h-mobileImageSmall md:h-desktopImageSmall w-mobileImageSmall md:w-desktopImageSmall object-scale-down"> -->
+                                                                                <span id="icon-160817"
+                                                                                    class="Icon-Overlay absolute w-full h-full bg-white top-0 bottom-0 left-0 opacity-0 transition-opacity duration-100"></span>
+                                                                            </div><span
+                                                                                class="h-10 -left-14 pointer-events-none hidden absolute w-20 border-b md:inline-block rounded-bl-sm top-half transform -translate-y-10 Tree__line--horizontal"></span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div tabindex="0"
+                                                                                class="Offer-Description--enabled Offer-Description text-md break-all cursor-pointer">
+                                                                                <span class="Offer-Description-Heading">
+                                                                                    <div
+                                                                                        class="Offer-Title Product-Title font-semibold max-w-full text-md break-normal text-grey-1 pr-10 md:pr-none cursor-pointer transition-colors duration-100">
+                                                                                        <span
+                                                                                            class="text-grey-2 font-normal text-md"></span>
+                                                                                        <span
+                                                                                            id="productNameUpsell"></span>
+                                                                                        <!-- Tenikle® 360° -->
+                                                                                    </div>
+                                                                                    <div class="Offer-Prices flex">
+                                                                                        <span
+                                                                                            class="Offer-Price-Before-Discount mr-4 text-grey-2 font-normal text-md line-through md:inline-block">
+                                                                                            <span><span class="money">
+                                                                                                    <!-- $ 45.00 USD -->
+                                                                                                    <span
+                                                                                                        id="productPriceBeforeDiscount"></span>
+                                                                                                </span></span></span><span
+                                                                                            class="Offer-Price text-grey-1 font-normal text-md">
+                                                                                            <span><span class="money">
+                                                                                                    <span
+                                                                                                        id="productPriceUpsell"></span>
+                                                                                                    <!-- $ 36.00 USD -->
+                                                                                                </span></span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </span>
+                                                                                <p
+                                                                                    class="Offer-Description-Content text-grey-2 text-sm pb-10 md:pt-4 md:pb-none break-normal">
+                                                                                    Get an additional Tenikle for 20%
+                                                                                    OFF
+                                                                                </p>
+                                                                            </div>
+                                                                            <div
+                                                                                class="hidden space-y-10 mt-10 Note-Field--wrapper md:block">
+                                                                                <div
+                                                                                    class="w-full md:w-250 relative Select-Variant--wrapper text-grey-1">
+                                                                                    <svg width="21" height="24"
+                                                                                        viewBox="0 0 21 24" fill="none"
+                                                                                        class="right-8 absolute top-half transform -translate-y-1/2 pointer-events-none Select-Variant--icon">
+                                                                                        <path fill-rule="evenodd"
+                                                                                            clip-rule="evenodd"
+                                                                                            d="M14.2519 9.29505C14.2519 9.16174 14.2053 9.03394 14.1225 8.94005L10.8062 5.15005C10.7268 5.05338 10.616 4.99854 10.5 4.99854C10.3839 4.99854 10.2731 5.05338 10.1937 5.15005L6.87746 8.94005C6.79463 9.03394 6.74805 9.16174 6.74805 9.29505C6.74805 9.42837 6.79463 9.55617 6.87746 9.65005L7.05246 9.85005C7.13477 9.94771 7.24882 10.002 7.36746 10.0001H13.6325C13.7511 10.002 13.8651 9.94771 13.9475 9.85005L14.1225 9.65005C14.2053 9.55617 14.2519 9.42837 14.2519 9.29505ZM6.74805 14.7051C6.74805 14.8384 6.79463 14.9662 6.87746 15.0601L10.1937 18.8501C10.2731 18.9467 10.3839 19.0016 10.5 19.0016C10.616 19.0016 10.7268 18.9467 10.8062 18.8501L14.1225 15.0601C14.2053 14.9662 14.2519 14.8384 14.2519 14.7051C14.2519 14.5717 14.2053 14.4439 14.1225 14.3501L13.9475 14.1501C13.8651 14.0524 13.7511 13.9981 13.6325 14.0001H7.36746C7.24882 13.9981 7.13477 14.0524 7.05246 14.1501L6.87746 14.3501C6.79463 14.4439 6.74805 14.5717 6.74805 14.7051Z"
+                                                                                            fill="currentColor"></path>
+                                                                                    </svg>
+                                                                                    <!-- <select class="appearance-none py-8 px-10 bg-white text-md w-full border bg-no-repeat pointer:text-md-mobile pr-25 truncate cursor-pointer">
+                                                                                    <option value="33353322397782">Black</option>
+                                                                                    <option value="33353322463318">Teal</option>                                                                                     
+                                                                                </select>-->
+                                                                                    <span id="productVariants1"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div
+                                                                        class="space-y-10 md:flex md:items-stretch md:justify-end md:space-y-none md:pt-15 Buy-Container">
+                                                                        <div
+                                                                            class="md:hidden w-full md:w-250 relative Select-Variant--wrapper text-grey-1">
+                                                                            <svg width="21" height="24"
+                                                                                viewBox="0 0 21 24" fill="none"
+                                                                                class="right-8 absolute top-half transform -translate-y-1/2 pointer-events-none Select-Variant--icon">
+                                                                                <path fill-rule="evenodd"
+                                                                                    clip-rule="evenodd"
+                                                                                    d="M14.2519 9.29505C14.2519 9.16174 14.2053 9.03394 14.1225 8.94005L10.8062 5.15005C10.7268 5.05338 10.616 4.99854 10.5 4.99854C10.3839 4.99854 10.2731 5.05338 10.1937 5.15005L6.87746 8.94005C6.79463 9.03394 6.74805 9.16174 6.74805 9.29505C6.74805 9.42837 6.79463 9.55617 6.87746 9.65005L7.05246 9.85005C7.13477 9.94771 7.24882 10.002 7.36746 10.0001H13.6325C13.7511 10.002 13.8651 9.94771 13.9475 9.85005L14.1225 9.65005C14.2053 9.55617 14.2519 9.42837 14.2519 9.29505ZM6.74805 14.7051C6.74805 14.8384 6.79463 14.9662 6.87746 15.0601L10.1937 18.8501C10.2731 18.9467 10.3839 19.0016 10.5 19.0016C10.616 19.0016 10.7268 18.9467 10.8062 18.8501L14.1225 15.0601C14.2053 14.9662 14.2519 14.8384 14.2519 14.7051C14.2519 14.5717 14.2053 14.4439 14.1225 14.3501L13.9475 14.1501C13.8651 14.0524 13.7511 13.9981 13.6325 14.0001H7.36746C7.24882 13.9981 7.13477 14.0524 7.05246 14.1501L6.87746 14.3501C6.79463 14.4439 6.74805 14.5717 6.74805 14.7051Z"
+                                                                                    fill="currentColor"></path>
+                                                                            </svg>
+                                                                            <!-- <select class="md:hidden appearance-none py-8 px-10 bg-white text-md w-full border bg-no-repeat pointer:text-md-mobile pr-25 truncate cursor-pointer">
+                                                                            <option value="33353322397782">Black</option>
+                                                                            <option value="33353322463318">Teal</option>                                                                             
+                                                                        </select>-->
+                                                                            <span id="productVariants2"></span>
+                                                                        </div>
+                                                                        <div class="flex items-center">
+                                                                            <div class="relative mr-10"><input
+                                                                                    id="variantQuantity" min="1"
+                                                                                    type="number" inputmode="numeric"
+                                                                                    class="w-70 ml-4 text-md text-grey-1 border py-8 px-10 appearance-none focus:shadow-none focus:outline-none h-full pointer:text-md-mobile Quantity-Selector"
+                                                                                    value="1">
+                                                                                <div
+                                                                                    class="absolute right-0 top-0 h-full w-20 bg-grey-5 hidden md:block">
+                                                                                    <button
+                                                                                        class="border h-half w-full flex justify-center items-center focus:shadow-none focus:outline-none cursor-pointer hover:text-grey-2 transition-all duration-100"
+                                                                                        data-cy="caret-up"><svg
+                                                                                            width="6" height="3"
+                                                                                            viewBox="0 0 6 3"
+                                                                                            fill="none">
+                                                                                            <path fill-rule="evenodd"
+                                                                                                clip-rule="evenodd"
+                                                                                                d="M4.79398 2.99994C5.23944 2.99994 5.46252 2.46136 5.14753 2.14638L3.35455 0.353471C3.15929 0.158218 2.84272 0.158218 2.64746 0.353471L0.854487 2.14638C0.539495 2.46136 0.762577 2.99994 1.20803 2.99994H4.79398Z"
+                                                                                                fill="currentColor">
+                                                                                            </path>
+                                                                                        </svg></button><button
+                                                                                        class="border-t-0 border h-half w-full flex justify-center items-center focus:shadow-none focus:outline-none cursor-default text-grey-3"
+                                                                                        disabled=""
+                                                                                        data-cy="caret-down"><svg
+                                                                                            width="6" height="3"
+                                                                                            viewBox="0 0 6 3"
+                                                                                            fill="none">
+                                                                                            <path fill-rule="evenodd"
+                                                                                                clip-rule="evenodd"
+                                                                                                d="M1.20816 0C0.762699 0 0.539617 0.538581 0.854609 0.85356L2.53939 2.53827C2.73465 2.73352 3.05122 2.73352 3.24648 2.53827L4.93125 0.853561C5.24625 0.538581 5.02317 0 4.57771 0H1.20816Z"
+                                                                                                fill="currentColor">
+                                                                                            </path>
+                                                                                        </svg></button>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button onclick="javascript:addItemToCart()"
+                                                                                data-cy="add"
+                                                                                class="text-readableAddButtonTextColor flex items-center justify-center font-semibold py-8 pr-20 pl-16 w-full text-md uppercase bg-addButtonBackgroundColor-1 cursor-pointer transition-colors duration-100 hover:bg-addButtonBackgroundColor-2 Button-Add "
+                                                                                style="overflow-wrap: anywhere; word-break: normal;"><svg
+                                                                                    viewBox="0 0 14 14" fill="none"
+                                                                                    class="mr-8 w-15">
+                                                                                    <path
+                                                                                        d="M11.0832 6.70842V7.29175C11.0832 7.45283 10.9526 7.58342 10.7915 7.58342H7.58317V10.7917C7.58317 10.9528 7.45259 11.0834 7.2915 11.0834H6.70817C6.54709 11.0834 6.4165 10.9528 6.4165 10.7917V7.58342H3.20817C3.04709 7.58342 2.9165 7.45283 2.9165 7.29175V6.70842C2.9165 6.54733 3.04709 6.41675 3.20817 6.41675H6.4165V3.20841C6.4165 3.04733 6.54709 2.91675 6.70817 2.91675H7.2915C7.45259 2.91675 7.58317 3.04733 7.58317 3.20841V6.41675H10.7915C10.9526 6.41675 11.0832 6.54733 11.0832 6.70842Z"
+                                                                                        fill="currentColor"></path>
+                                                                                </svg>Add</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="simplebar-placeholder" style="width: auto; height: 235px;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                        <div class="simplebar-scrollbar simplebar-visible"
+                                            style="width: 0px; display: none;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-vertical" style="visibility: hidden;">
+                                        <div class="simplebar-scrollbar simplebar-visible"
+                                            style="height: 0px; display: none;"></div>
+                                    </div>
+                                </div>
+                            </section>
+                            <footer
+                                class="Footer py-15 pr-15 md:pr-25 pl-15 border-t flex flex-col-reverse md:flex-row md:justify-end">
+                                <button id="btnContinue" data-cy="continue-button"
+                                    class="text-readableContinueToButtonTextColor
+        flex items-center justify-center font-semibold
+        py-8 pl-20 pr-16 w-full md:w-auto  text-md uppercase bg-continueToButtonBackgroundColor-1 cursor-pointer transition-colors duration-100 hover:bg-continueToButtonBackgroundColor-2 Button-Primary pr-15">Continue<svg
+                                        viewBox="0 0 15 14" fill="none" class="w-18 ml-4">
+                                        <path
+                                            d="M9.95339 6.58C10.0352 6.66196 10.0812 6.77317 10.0814 6.88916V7.11083C10.08 7.22657 10.0342 7.33733 9.95339 7.42L6.96372 10.4125C6.90912 10.4677 6.83478 10.4988 6.75724 10.4988C6.67969 10.4988 6.60536 10.4677 6.55075 10.4125L6.13778 9.99833C6.08307 9.94457 6.05224 9.87098 6.05224 9.79416C6.05224 9.71734 6.08307 9.64376 6.13778 9.59L8.72611 7L6.13778 4.41C6.08273 4.35523 6.05176 4.28068 6.05176 4.20291C6.05176 4.12514 6.08273 4.05059 6.13778 3.99583L6.55075 3.5875C6.60536 3.53228 6.67969 3.50122 6.75724 3.50122C6.83478 3.50122 6.90912 3.53228 6.96372 3.5875L9.95339 6.58Z"
+                                            fill="currentColor"></path>
+                                    </svg></button>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- </div> -->
+    </div>
+
+    <script src="shopify-script.js"></script>
+</body>
+
+</html>
