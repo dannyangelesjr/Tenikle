@@ -234,51 +234,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        const promise1 = new Promise((resolve, reject) => {
-            createStyleSheet();
-            resolve('Success!');
-        });
-        promise1.then((value) => {
-            createIFrame();
-        });
-
-        function createStyleSheet() {
-            jQuery.get("http://localho.st:8080/tenikle-styles.css", function (data) {
-                var sheet = $('<style></style>')
-                $('head').append(sheet)
-                sheet.append(data);
-            })
-        };
-
-        function createIFrame() {
-            // does this get loaded?
-            jQuery.get("http://localho.st:8080/tenikle-iframe.html", function (data) {
-                var iframe = document.createElement("iframe");
-                iframe.setAttribute("tabindex", "0");
-                iframe.setAttribute("name", "frame");
-                iframe.setAttribute("id", "myIframe");
-                iframe.setAttribute("data-hj-allow-iframe", "true");
-                iframe.setAttribute("src", "http://localho.st:8080/tenikle-iframe.html");
-                iframe.setAttribute("style", "display: block; width: 100%; height: 100%; position: fixed; inset: 0px; z-index: 2147483647; border: none;display:none");
-                iframe.innerHTML = data;
-                iframe.src = 'data:text/html,' + encodeURIComponent(data);
-
-                const promise1 = new Promise((resolve, reject) => {
-                    document.body.appendChild(iframe);
-
-                    resolve('Success!');
-                });
-
-                promise1.then((value) => {
-                    console.log(value);
-                    // expected output: "Success!"
-                    setupModal();
-                });
-            });
-        };
-    </script>
+    </div>    
 </body>
 
 </html>

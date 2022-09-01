@@ -69,7 +69,21 @@
                         },
                         "googleFonts": [
                             "Montserrat"
-                        ]
+                        ],
+                        DOMEvents: {
+                            'click .shopify-buy__btn': function (evt, target) {
+                              let data = target;
+                              let product = ui.components;
+                
+                              updateCart(product.product[0].model.id, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
+                
+                              setupModal();
+                
+                              const iframeDocument = document.getElementById('myIframe');
+                              const iframeWindow = iframeDocument.contentWindow;
+                              iframeDocument.style.display = "block";
+                            }
+                          },
                     },
                     "productSet": {
                         "styles": {
