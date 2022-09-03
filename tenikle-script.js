@@ -1,210 +1,88 @@
+// IFRAME script
 (function () {
-    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-    if (window.ShopifyBuy) {
-        if (window.ShopifyBuy.UI) {
-            ShopifyBuyInit();
-        } else {
-            loadScript();
+
+    initialize();
+    async function initialize() {
+        // createModal(await createDiv());
+        createModal();
+    }
+
+    function createDiv() {
+        return new Promise((resolve) => {
+            try {
+                jQuery.get("https://uploads-ssl.webflow.com/62eca35217fa63e7178111ad/6310b9c5801479cbe2b7dfe6_tenikle-iframe.txt", function (data) {
+                    var div = document.createElement("div");
+                    div.setAttribute("tabindex", "0");
+                    div.setAttribute("name", "frame");
+                    div.setAttribute("id", "myIframe");
+                    div.setAttribute("data-hj-allow-iframe", "true");
+                    div.setAttribute("style", "display: block; width: 100%; height: 100%; position: fixed; inset: 0px; z-index: 2147483647; border: none;display:none");
+                    div.innerHTML = data;
+                    //div.src = 'data:text/html,' + encodeURIComponent(data);
+                    document.body.appendChild(div);
+
+                    resolve('Success!');
+                });
+            }
+            catch (ex) {
+                alert('createIFrame EXCEPTION: ' + ex);
+            }
+        });
+    };
+
+    function createModal() {
+        try {
+            // Get the <span> element that closes the modal
+            // When the user clicks on <span> (x), close the modal
+            let btnClose = $('#myIframe').contents().find('#btnClose')
+            btnClose.onclick = function () {
+                iframeDocument.style.display = "none";
+            };
+
+            // Get the continue button
+            // when the user clicks the continue button, redirect to checkout
+            let btnContinue = $('#myIframe').contents().find('#btnClose')
+            btnContinue.onclick = function () {
+                window.location.replace("https://www.tenikle.com/cart")
+            }
+
+            // Get the add button
+            // When the user clicks the add button, add item to cart
+            let btnAdd = $('#myIframe').contents().find('#btnAdd')
+            btnAdd.onclick = function () {
+                let $productId = iframeWindow.document.getElementById('productId');
+                let $variantId = iframeWindow.document.getElementById('productVariants1');
+                let $quantity = iframeWindow.document.getElementById('variantQuantity');
+
+                let productId = $productId.innerHTML;
+                let variantId = $variantId.selectedOptions[0].value;
+                let quantity = parseInt($quantity.value);
+
+                const client = ShopifyBuy.buildClient({
+                    domain: shopifyDomain,
+                    storefrontAccessToken: 'f4b463a7038ebe9367370e6e50c04b5e',
+                })
+
+                client.product.fetch(btoa(productId)).then((product) => {
+                    product.variants.forEach((variant) => {
+                        if (variant.id == variantId) {
+                            product.selectedQuantity = quantity;
+                            updateCart(productId, variantId, quantity);
+                        }
+                    });
+                });
+            };
+
+            // When the user clicks anywhere outside of the modal, close it
+            let modal = $('#myIframe').contents().find('#myModal')
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    iFrame.style.display = "none";
+                }
+            };
         }
-    } else {
-        loadScript();
-    }
-    function loadScript() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = scriptURL;
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-        script.onload = ShopifyBuyInit;
-    }
-    function ShopifyBuyInit() {
-        var client = ShopifyBuy.buildClient({
-            domain: 'tenikle.myshopify.com',
-            storefrontAccessToken: 'f4b463a7038ebe9367370e6e50c04b5e',
-        });
-        ShopifyBuy.UI.onReady(client).then(function (ui) {
-            ui.createComponent('product', {
-                id: '4958989615190',
-                node: document.getElementById('product-component-1660181892298'),
-                moneyFormat: '%24%7B%7Bamount%7D%7D',
-                options: {
-                    "product": {
-                        "styles": {
-                            "product": {
-                                "@media (min-width: 601px)": {
-                                    "max-width": "calc(25% - 20px)",
-                                    "margin-left": "20px",
-                                    "margin-bottom": "50px"
-                                }
-                            },
-                            "button": {
-                                "font-family": "Montserrat, sans-serif",
-                                "font-weight": "bold",
-                                "font-size": "18px",
-                                "padding-top": "17px",
-                                "padding-bottom": "17px",
-                                ":hover": {
-                                    "background-color": "#e63844"
-                                },
-                                "background-color": "#ff3e4b",
-                                ":focus": {
-                                    "background-color": "#e63844"
-                                },
-                                "border-radius": "15px",
-                                "padding-left": "87px",
-                                "padding-right": "87px"
-                            },
-                            "quantityInput": {
-                                "font-size": "18px",
-                                "padding-top": "17px",
-                                "padding-bottom": "17px"
-                            }
-                        },
-                        "contents": {
-                            "img": false,
-                            "title": false,
-                            "price": false
-                        },
-                        "text": {
-                            "button": "Add to cart"
-                        },
-                        "googleFonts": [
-                            "Montserrat"
-                        ],
-                        DOMEvents: {
-                            'click .shopify-buy__btn': function (evt, target) {
-                              let data = target;
-                              let product = ui.components;
-                
-                              updateCart(product.product[0].model.id, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
-                
-                              setupModal();
-                
-                              const iframeDocument = document.getElementById('myIframe');
-                              const iframeWindow = iframeDocument.contentWindow;
-                              iframeDocument.style.display = "block";
-                            }
-                          },
-                    },
-                    "productSet": {
-                        "styles": {
-                            "products": {
-                                "@media (min-width: 601px)": {
-                                    "margin-left": "-20px"
-                                }
-                            }
-                        }
-                    },
-                    "modalProduct": {
-                        "contents": {
-                            "img": false,
-                            "imgWithCarousel": true,
-                            "button": false,
-                            "buttonWithQuantity": true
-                        },
-                        "styles": {
-                            "product": {
-                                "@media (min-width: 601px)": {
-                                    "max-width": "100%",
-                                    "margin-left": "0px",
-                                    "margin-bottom": "0px"
-                                }
-                            },
-                            "button": {
-                                "font-family": "Montserrat, sans-serif",
-                                "font-weight": "bold",
-                                "font-size": "18px",
-                                "padding-top": "17px",
-                                "padding-bottom": "17px",
-                                ":hover": {
-                                    "background-color": "#e63844"
-                                },
-                                "background-color": "#ff3e4b",
-                                ":focus": {
-                                    "background-color": "#e63844"
-                                },
-                                "border-radius": "15px",
-                                "padding-left": "87px",
-                                "padding-right": "87px"
-                            },
-                            "quantityInput": {
-                                "font-size": "18px",
-                                "padding-top": "17px",
-                                "padding-bottom": "17px"
-                            }
-                        },
-                        "googleFonts": [
-                            "Montserrat"
-                        ],
-                        "text": {
-                            "button": "Add to cart"
-                        }
-                    },
-                    "option": {
-                        "styles": {
-                            "label": {
-                                "font-family": "Montserrat, sans-serif"
-                            },
-                            "select": {
-                                "font-family": "Montserrat, sans-serif"
-                            }
-                        },
-                        "googleFonts": [
-                            "Montserrat"
-                        ]
-                    },
-                    "cart": {
-                        "styles": {
-                            "button": {
-                                "font-family": "Montserrat, sans-serif",
-                                "font-weight": "bold",
-                                "font-size": "18px",
-                                "padding-top": "17px",
-                                "padding-bottom": "17px",
-                                ":hover": {
-                                    "background-color": "#e63844"
-                                },
-                                "background-color": "#ff3e4b",
-                                ":focus": {
-                                    "background-color": "#e63844"
-                                },
-                                "border-radius": "15px"
-                            }
-                        },
-                        "text": {
-                            "total": "Subtotal",
-                            "button": "Checkout"
-                        },
-                        "contents": {
-                            "note": true
-                        },
-                        "popup": false,
-                        "googleFonts": [
-                            "Montserrat"
-                        ]
-                    },
-                    "toggle": {
-                        "styles": {
-                            "toggle": {
-                                "font-family": "Montserrat, sans-serif",
-                                "font-weight": "bold",
-                                "background-color": "#ff3e4b",
-                                ":hover": {
-                                    "background-color": "#e63844"
-                                },
-                                ":focus": {
-                                    "background-color": "#e63844"
-                                }
-                            },
-                            "count": {
-                                "font-size": "18px"
-                            }
-                        },
-                        "googleFonts": [
-                            "Montserrat"
-                        ]
-                    }
-                },
-            });
-        });
+        catch (err) {
+            alert(err);
+        }
     }
 })();

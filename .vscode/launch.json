@@ -5,12 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-chrome",
+            "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080/index.html",
-            "webRoot": "${workspaceFolder}",
-            "runtimeArgs": ["--disable-web-security"]
+            "name": "Open index.html",
+            "file": "c:\\Projects\\Tenikle\\index.html"
+            // "file": "c:\\Projects\\Tenikle\\backup\\old\\test.html"
         }
     ]
 }
