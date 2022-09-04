@@ -78,7 +78,7 @@ function ShopifyBuyInit() {
                         'click .shopify-buy__btn': function (evt, target) {
                             let data = target;
                             let product = ui.components;
-                            updateCart(client, product.product[0].model.id, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
+                            updateCart(client, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
 
                             // let $iframe = $('#myIframe');
                             // $iframe[0].style.display = "block";
@@ -208,20 +208,6 @@ function ShopifyBuyInit() {
     });
 }
 
-function removeDiscount(checkoutId) {
-    return new Promise(() => {
-        if (checkout.discountApplications.length == 0) {
-            console.log('[removeDiscount] discount CANDYRACK-W7OJZQP91P not found. Applying discount.');
-            // Add a discount code to the checkout            
-            client.checkout.removeDiscount(checkoutId).then(checkout => {
-                console.log('[removeDiscount] discount CANDYRACK-W7OJZQP91P applied');
-            })
-            console.log('[removeDiscount] discount CANDYRACK-W7OJZQP91P post');
-        };
-        console.log('*** [removeDiscount] end');
-    })
-}
-
 function createCart(client) {
     return new Promise((resolve, reject) => {
         client.checkout.create().then((checkout) => {
@@ -277,6 +263,51 @@ function cartExist() {
     })
 };
 
+function discountExist(client, checkoutId, discountCode) {
+    return new Promise((resolve, reject) => {
+        client.checkout.fetch(checkoutId).then(
+            (checkout) => {
+                let isDiscountExist = false;
+                checkout.discountApplications.length > 0 && checkout.discountApplications.forEach((discountApplication) => {if (discountApplication.discountCode == discountCode) { isDiscountExist = true; }});
+                console.log(isDiscountExist);
+                resolve(isDiscountExist);
+            },
+            () => { reject(); });
+    })
+}
+
+function discountEligibility(client, checkoutId) {
+    return new Promise((resolve, reject) => {
+        console.log(client.checkout.fetch(checkoutId).then(
+            (checkout) => {
+                !discountExist(client, checkoutId).then(
+                    () => { console.log('eligible for discount'); resolve(checkout.lineItems.length > 1); },
+                    () => { console.log('discount already applied. no need to re apply.'); return (false); });
+            }),
+            () => { reject(); }
+        );
+    })
+}
+
+function applyDiscount(checkoutId, discountCode) {
+    return new Promise(() => {
+        if (client.checkout.fetch())
+            client.checkout.addDiscount(checkoutId).then(
+                () => { console.log('applied discount ' + discountCode); resolve(true); },
+                () => { console.log('unable to apply discount but should'); reject(); }
+            )
+    })
+}
+
+function removeDiscount(checkoutId, discountCode) {
+    return new Promise((resolve, reject) => {
+        client.checkout.removeDiscount(checkoutId).then(
+            () => { console.log('discount removed ' + discountCode); resolve() },
+            () => { console.log('unable to remove discount ' + discountCode); reject(); }
+        )
+    })
+}
+
 function addLineItem(client, checkoutId, variantId, quantity) {
     return new Promise((resolve, reject) => {
         let lineItemToAdd = [
@@ -328,15 +359,22 @@ function itemInCart(client, checkoutId, variantId) {
     })
 }
 
-function updateCart(client, productId, variantId, quantity) {
+function updateCart(client, variantId, quantity) {
     //deleteCart();
 
     cartExist().then(
         (checkoutId) => {
-            itemInCart(client, checkoutId, variantId).then(
-                (lineItem) => { updateLineItem(client, checkoutId, lineItem.id, quantity + lineItem.quantity); },
-                () => { addLineItem(client, checkoutId, variantId, quantity); console.log('completed'); }
-            );
+            itemInCart(client, checkoutId, variantId)
+                .then(
+                    (lineItem) => { updateLineItem(client, checkoutId, lineItem.id, quantity + lineItem.quantity); },
+                    () => { addLineItem(client, checkoutId, variantId, quantity); console.log('completed'); }
+                ).then(
+                    () => {
+                        discountEligibility(client, checkoutId).then(
+                            (eligible) => { if (eligible) { applyDiscount('CANDYRACK-W7OJZQP91P'); console.log('discount applied') } else { removeDiscount('CANDYRACK-W7OJZQP91P'); console.log('discount removed') } },
+                            () => { console.log('unable to get cart count but should') }
+                        );
+                    });
         },
         () => {
             createCart(client).then(
