@@ -1,6 +1,7 @@
 const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 const shopifyDomain = 'tenikle.myshopify.com';
 const shopifyAccessToken = 'f4b463a7038ebe9367370e6e50c04b5e';
+const productId = '4958989615190';
 
 if (window.ShopifyBuy) {
     if (window.ShopifyBuy.UI) {
@@ -76,39 +77,44 @@ function ShopifyBuyInit() {
                     ],
                     "events": {
                         addVariantToCart: function (product) {
-                            cart_drawerHide();
-
                             const upsellButtonElement = document.getElementById("upsellButton");
-                            const emptyCartbutton = document.getElementById("emptyCartButton");
-
                             if ((upsellButtonElement.getAttribute('listener') == null)) {
                                 upsellButtonElement.setAttribute('listener', 'true');
                                 upsellButtonElement.addEventListener("click", event => {
                                     console.log('update cart button clicked');
+
                                     updateCart(client, product.storefrontId, product.selectedVariant.id, product.selectedQuantity);
-                                    event.stopPropagation();
-
-
-                                    let iframe = document.getElementsByName('frame-cart');
-                                    // update cart drawer value
-                                    let cartDrawerElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-initialized is-active is-visible');
-                                    cartDrawerElement[0].value = parseInt(cartDrawerElement[0].value) + parseInt(product.selectedQuantity)
-
-                                    // update cart toggle count value
-                                    let cartCountElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__cart-toggle__count');
-                                    cartCountElement.value = cartDrawerElement[0].value;
-
-                                });
-
-                                emptyCartbutton.addEventListener("click", event => {
-                                    console.log('delete cart button clicked');
-                                    cart_delete();
-                                    event.stopPropagation();
-                                    ui.openCart();
-                                });
+                                    cart_iconCountUpdate(product.selectedQuantity);
+                                    event.stopPropagation();                                    
+                                });                                
                             }
                         },
                         updateVariant: function (product) { alert('updateVariant') },
+                    },
+                    "DOMEvents": {
+                        'click .shopify-buy__btn': function (evt, target) {
+                            let data = target;
+                            let product = ui.components;
+
+                            updateCart(client, product.product[0].storefrontId, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
+                            cart_iconCountUpdate(product.product[0].selectedQuantity);
+
+                            const upsellButtonElement = document.getElementById("upsellButton");
+                            const storefrontId = product.product[0].storefrontId;
+                            if ((upsellButtonElement.getAttribute('listener') == null)) {
+                                upsellButtonElement.setAttribute('listener', 'true');
+                                upsellButtonElement.addEventListener("click", event => {
+                                    console.log('update cart button clicked');
+
+                                    let selectedVariantId = document.getElementById("selectedVariantId").value;
+                                    let selectedQuantity = document.getElementById("selectedQuantity").value;
+
+                                    updateCart(client, storefrontId, selectedVariantId, selectedQuantity);
+                                    cart_iconCountUpdate(product.selectedQuantity);                                    
+                                });                                
+                            }
+                            evt.stopPropagation();
+                        }
                     },
                 },
                 "productSet": {
@@ -208,10 +214,8 @@ function ShopifyBuyInit() {
                         "Montserrat"
                     ],
                     "events": {
-                        updateItemQuantity: function(cart) {
-                            if(cart.selectedQuantity == 0) {
-                                console.log('here');
-                            }
+                        updateItemQuantity: function (cart) {
+                            cart_iconCountUpdate();
                         }
                     },
                 },
@@ -242,10 +246,27 @@ function ShopifyBuyInit() {
 }
 
 function cart_drawerHide() {
-    let iframe = document.getElementsByName('frame-cart');
-    if (iframe.length > 0) {
-        iframe[0].remove('is-block');
-    }
+    // let iframe = document.getElementsByName('shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-active is-visible is-initialized');
+    // //shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-active is-visible is-initialized
+    // //shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-initialized
+    // if (iframe[0] = 'is-block') {
+    //     iframe[0].classList.replace('is-block','');
+    // }
+    // else {
+    //     iframe[0].classList.replace('','is-block');
+    // }
+}
+
+function cart_iconCountUpdate(quantity) {
+    let iframe = document.getElementsByName('frame-toggle');
+    // cart toggle icon
+    let cartCountElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__cart-toggle__count');
+    cartCountElement[0].textContent = parseInt(cartCountElement[0].textContent) + parseInt(quantity);    
+}
+
+function cart_drawerCountUpdate(quantity) {    
+    let cartDrawerElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__quantity shopify-buy__cart-item__quantity-input');    
+    cartDrawerElement[0].value = parseInt(cartDrawerElement[0].value) + parseInt(quantity)
 }
 
 function cart_get(client) {
@@ -441,7 +462,6 @@ function item_isInCart(client, checkoutId, variantId) {
 }
 
 function updateCart(client, productId, variantId, quantity) {
-    //deleteCart();    
     cart_isExist().then(
         (checkoutId) => {
             item_isInCart(client, checkoutId, variantId)

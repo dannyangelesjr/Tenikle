@@ -2,13 +2,33 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopify Buy Button</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
-<body>     
-    <button id="upsellButton" class="buybuttonjs-buy__btn  " data-element="product.button">Upsell</button>
-    <button id="emptyCartButton" >Empty Cart</button>
-    
-    <script src="shopify-script.js"></script> 
+<body>
+    <div style="background-color:antiquewhite">
+        <form>
+            <label for="selectedVariantId">Variant</label>
+            <select name="selectedVariantId" id="selectedVariantId">
+                <option value="33353322397782">Black</option>
+                <option value="33358880309334">Red</option>
+                <option value="33353322463318">Teal</option>
+            </select>
+            <br><br>
+            <label for="selectedQuantity">Quantity:</label>
+            <input type="number" id="selectedQuantity" value="1"><br><br>
+        </form>
+        <button id="upsellButton" class="buybuttonjs-buy__btn  " data-element="product.button">Upsell</button>
+    </div>
+
+    <h1>BODY</h1>
+    <script src="shopify-script.js"></script>
 </body>
+
 </html>
