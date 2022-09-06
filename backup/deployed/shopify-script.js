@@ -74,41 +74,15 @@ function ShopifyBuyInit() {
                     "googleFonts": [
                         "Montserrat"
                     ],
-                    "events": {
-                        addVariantToCart: function (product) {
-                            cart_drawerHide();
+                    "DOMEvents": {
+                        'click .shopify-buy__btn': function (evt, target) {
+                            let data = target;
+                            let product = ui.components;
+                            updateCart(client, product.product[0].storefrontId, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
 
-                            const upsellButtonElement = document.getElementById("upsellButton");
-                            const emptyCartbutton = document.getElementById("emptyCartButton");
-
-                            if ((upsellButtonElement.getAttribute('listener') == null)) {
-                                upsellButtonElement.setAttribute('listener', 'true');
-                                upsellButtonElement.addEventListener("click", event => {
-                                    console.log('update cart button clicked');
-                                    updateCart(client, product.storefrontId, product.selectedVariant.id, product.selectedQuantity);
-                                    event.stopPropagation();
-
-
-                                    let iframe = document.getElementsByName('frame-cart');
-                                    // update cart drawer value
-                                    let cartDrawerElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-initialized is-active is-visible');
-                                    cartDrawerElement[0].value = parseInt(cartDrawerElement[0].value) + parseInt(product.selectedQuantity)
-
-                                    // update cart toggle count value
-                                    let cartCountElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__cart-toggle__count');
-                                    cartCountElement.value = cartDrawerElement[0].value;
-
-                                });
-
-                                emptyCartbutton.addEventListener("click", event => {
-                                    console.log('delete cart button clicked');
-                                    cart_delete();
-                                    event.stopPropagation();
-                                    ui.openCart();
-                                });
-                            }
-                        },
-                        updateVariant: function (product) { alert('updateVariant') },
+                            // let $iframe = $('#myIframe');
+                            // $iframe[0].style.display = "block";
+                        }
                     },
                 },
                 "productSet": {
@@ -206,14 +180,7 @@ function ShopifyBuyInit() {
                     "popup": false,
                     "googleFonts": [
                         "Montserrat"
-                    ],
-                    "events": {
-                        updateItemQuantity: function(cart) {
-                            if(cart.selectedQuantity == 0) {
-                                console.log('here');
-                            }
-                        }
-                    },
+                    ]
                 },
                 "toggle": {
                     "styles": {
@@ -241,28 +208,7 @@ function ShopifyBuyInit() {
     });
 }
 
-function cart_drawerHide() {
-    let iframe = document.getElementsByName('frame-cart');
-    if (iframe.length > 0) {
-        iframe[0].remove('is-block');
-    }
-}
-
-function cart_get(client) {
-    return new Promise((resolve, reject) => {
-        client.checkout.getAttribute().then(
-            (checkout) => {
-                let key = shopifyAccessToken + '.' + shopifyDomain + '.checkoutId';
-                let value = checkout.id
-                localStorage.setItem(key, value);
-                console.log('cart created');
-                resolve(checkout.id);
-            },
-            () => { console.log('unable to create cart '); reject(); })
-    })
-}
-
-function cart_create(client) {
+function createCart(client) {
     return new Promise((resolve, reject) => {
         client.checkout.create().then(
             (checkout) => {
@@ -276,7 +222,7 @@ function cart_create(client) {
     })
 }
 
-function cart_delete() {
+function deleteCart() {
     return new Promise((resolve, reject) => {
         let isCartExist = false;
         for (var checkoutId, key, i = 0; i < localStorage.length; ++i) {
@@ -293,7 +239,7 @@ function cart_delete() {
     })
 }
 
-function cart_isExist() {
+function cartExist() {
     return new Promise((resolve, reject) => {
         let isCartExist = false;
         for (var checkoutId, key, i = 0; i < localStorage.length; ++i) {
@@ -310,7 +256,7 @@ function cart_isExist() {
     })
 }
 
-function discount_isExist(client, checkoutId, discountCode) {
+function discountExist(client, checkoutId, discountCode) {
     return new Promise((resolve, reject) => {
         client.checkout.fetch(checkoutId).then(
             (checkout) => {
@@ -330,12 +276,12 @@ function discount_isExist(client, checkoutId, discountCode) {
     })
 }
 
-function discount_isEligible(client, checkoutId, productId) {
+function discountEligibility(client, checkoutId, productId) {
     return new Promise((resolve, reject) => {
-        discount_isExist(client, checkoutId).then(
+        discountExist(client, checkoutId).then(
             () => { console.log('discount already applied. no need to re-apply.'); reject(false); },
             () => {
-                ruleQuantityForDiscount_isSatisfied(client, checkoutId, productId).then(
+                quantityRuleSatisfied(client, checkoutId, productId).then(
                     () => { console.log('eligible for discount'); resolve(true) },
                     () => { console.log('not eligible for discount since #items is less than 2'); resolve(false); }
                 )
@@ -344,7 +290,7 @@ function discount_isEligible(client, checkoutId, productId) {
     })
 }
 
-function discount_apply(client, checkoutId, discountCode) {
+function applyDiscount(client, checkoutId, discountCode) {
     return new Promise((resolve, reject) => {
         client.checkout.addDiscount(btoa(checkoutId), discountCode).then(
             () => { console.log('applied discount'); resolve(true); },
@@ -353,7 +299,7 @@ function discount_apply(client, checkoutId, discountCode) {
     })
 }
 
-function discount_clear(client, checkoutId, discountCode) {
+function clearDiscount(client, checkoutId, discountCode) {
     return new Promise(() => {
         client.checkout.fetch(checkoutId).then(
             (checkout) => {
@@ -370,7 +316,7 @@ function discount_clear(client, checkoutId, discountCode) {
     })
 }
 
-function ruleQuantityForDiscount_isSatisfied(client, checkoutId, productId) {
+function quantityRuleSatisfied(client, checkoutId, productId) {
     return new Promise((resolve, reject) => {
         client.checkout.fetch(checkoutId).then(
             (checkout) => {
@@ -389,7 +335,7 @@ function ruleQuantityForDiscount_isSatisfied(client, checkoutId, productId) {
     })
 }
 
-function lineItem_add(client, checkoutId, variantId, quantity) {
+function addLineItem(client, checkoutId, variantId, quantity) {
     return new Promise((resolve, reject) => {
         let lineItemToAdd = [
             {
@@ -403,7 +349,7 @@ function lineItem_add(client, checkoutId, variantId, quantity) {
     })
 }
 
-function lineItem_update(client, checkoutId, lineItemId, quantity) {
+function updateLineItem(client, checkoutId, lineItemId, quantity) {
     return new Promise((resolve, reject) => {
         let lineItemToUpdate = [
             {
@@ -418,7 +364,7 @@ function lineItem_update(client, checkoutId, lineItemId, quantity) {
     })
 }
 
-function item_isInCart(client, checkoutId, variantId) {
+function itemInCart(client, checkoutId, variantId) {
     return new Promise((resolve, reject) => {
         client.checkout.fetch(checkoutId).then(
             (checkout) => {
@@ -441,26 +387,27 @@ function item_isInCart(client, checkoutId, variantId) {
 }
 
 function updateCart(client, productId, variantId, quantity) {
-    //deleteCart();    
-    cart_isExist().then(
+    // deleteCart();    
+    cartExist().then(
         (checkoutId) => {
-            item_isInCart(client, checkoutId, variantId)
+            itemInCart(client, checkoutId, variantId)
                 .then(
-                    (lineItem) => { lineItem_update(client, checkoutId, lineItem.id, quantity + lineItem.quantity); },
-                    () => { lineItem_add(client, checkoutId, variantId, quantity); }
+                    (lineItem) => { updateLineItem(client, checkoutId, lineItem.id, quantity + lineItem.quantity); },
+                    () => { addLineItem(client, checkoutId, variantId, quantity); }
                 ).then(
                     () => {
-                        discount_isEligible(client, checkoutId, productId).then(
+                        discountEligibility(client, checkoutId, productId).then(
                             (eligible) => {
-                                if (eligible) { discount_apply(client, checkoutId, 'CANDYRACK-W7OJZQP91P'); console.log('discount applied') }
-                                else { discount_clear('CANDYRACK-W7OJZQP91P'); console.log('discount removed') }
+                                if (eligible) { applyDiscount(client, checkoutId, 'CANDYRACK-W7OJZQP91P'); console.log('discount applied') }
+                                else { clearDiscount('CANDYRACK-W7OJZQP91P'); console.log('discount removed') }
                             },
                             () => { console.log('discount not applied') }
                         );
                     });
         },
         () => {
-            cart_create(client).then(
-                (checkoutId) => { lineItem_add(client, checkoutId, variantId, quantity); resolve(); })
-        })
+            createCart(client).then(
+                (checkoutId) => { addLineItem(client, checkoutId, variantId, quantity); })
+        }
+    );
 }
