@@ -1,7 +1,9 @@
 const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 const shopifyDomain = 'tenikle.myshopify.com';
 const shopifyAccessToken = 'f4b463a7038ebe9367370e6e50c04b5e';
-const productId = '4958989615190';
+const productId = 'gid://shopify/Product/4958989615190';
+const discountCode = 'CANDYRACK-W7OJZQP91P';
+let clientReference;
 
 if (window.ShopifyBuy) {
     if (window.ShopifyBuy.UI) {
@@ -22,10 +24,13 @@ function loadScript() {
 }
 
 function ShopifyBuyInit() {
-    var client = ShopifyBuy.buildClient({
+    const client = ShopifyBuy.buildClient({
         domain: shopifyDomain,
         storefrontAccessToken: shopifyAccessToken,
     });
+
+    clientReference = client;
+
     ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('product', {
             id: '4958989615190',
@@ -82,40 +87,49 @@ function ShopifyBuyInit() {
                                 upsellButtonElement.setAttribute('listener', 'true');
                                 upsellButtonElement.addEventListener("click", event => {
                                     console.log('update cart button clicked');
-
                                     updateCart(client, product.storefrontId, product.selectedVariant.id, product.selectedQuantity);
                                     cart_iconCountUpdate(product.selectedQuantity);
-                                    event.stopPropagation();                                    
-                                });                                
+                                });
                             }
                         },
                         updateVariant: function (product) { alert('updateVariant') },
                     },
                     "DOMEvents": {
+                        'click .shopify-buy__quantity-increment': (e, target) => { console.log('increase') },
+                        'click .shopify-buy__quantity-decrement': (e, target) => { console.log('decrease') },
                         'click .shopify-buy__btn': function (evt, target) {
                             let data = target;
                             let product = ui.components;
 
                             updateCart(client, product.product[0].storefrontId, product.product[0].selectedVariant.id, product.product[0].selectedQuantity);
-                            cart_iconCountUpdate(product.product[0].selectedQuantity);
 
-                            const upsellButtonElement = document.getElementById("upsellButton");
-                            const storefrontId = product.product[0].storefrontId;
-                            if ((upsellButtonElement.getAttribute('listener') == null)) {
-                                upsellButtonElement.setAttribute('listener', 'true');
-                                upsellButtonElement.addEventListener("click", event => {
-                                    console.log('update cart button clicked');
+                            let showModal = document.getElementById('myModal');
+                            showModal.style.display = 'block';
 
-                                    let selectedVariantId = document.getElementById("selectedVariantId").value;
-                                    let selectedQuantity = document.getElementById("selectedQuantity").value;
+                            //cart_drawerShow();
 
-                                    updateCart(client, storefrontId, selectedVariantId, selectedQuantity);
-                                    cart_iconCountUpdate(product.selectedQuantity);                                    
-                                });                                
-                            }
-                            evt.stopPropagation();
+                            // cart_iconCountUpdate(product.product[0].selectedQuantity);
+
+
+
+                            //         const upsellButtonElement = document.getElementById("upsellButton");
+                            //         const storefrontId = product.product[0].storefrontId;
+                            //         if ((upsellButtonElement.getAttribute('listener') == null)) {
+                            //             upsellButtonElement.setAttribute('listener', 'true');
+                            //             upsellButtonElement.addEventListener("click", event => {
+                            //                 console.log('update cart button clicked');
+
+                            //                 let selectedVariantId = document.getElementById("selectedVariantId").value;
+                            //                 let selectedQuantity = document.getElementById("selectedQuantity").value;
+
+                            //                 updateCart(client, storefrontId, selectedVariantId, selectedQuantity);
+                            //                 cart_iconCountUpdate(product.selectedQuantity);                                    
+                            //             });                                
+                            //         }
+                            //evt.stopPropagation();
+                            //}
                         }
-                    },
+                    }
                 },
                 "productSet": {
                     "styles": {
@@ -215,8 +229,25 @@ function ShopifyBuyInit() {
                     ],
                     "events": {
                         updateItemQuantity: function (cart) {
-                            cart_iconCountUpdate();
-                        }
+                            cart.lineItems.forEach((lineItem) => {
+                                console.log(lineItem);
+                                if (lineItem.variant.product.id == productId && lineItem.quantity <= 2) {
+                                    console.log('variant does not meet discount requirement');
+                                    lineItem.discountAllocations.forEach((discountAllocation) => {
+                                        console.log(discountAllocation);
+                                        if (discountAllocation.discountApplication.code == discountCode) {
+                                            cart_isExist().then((checkoutId) => {
+                                                client.checkout.removeDiscount(checkoutId)
+                                                console.log('removed discount code');
+                                            })
+                                        }
+                                    })
+                                    // let cart = cart_isExist().then((checkoutId) => {
+                                    //     discount_clear(client, checkoutId, discountCode);
+                                    // });
+                                }
+                            })
+                        },
                     },
                 },
                 "toggle": {
@@ -245,42 +276,36 @@ function ShopifyBuyInit() {
     });
 }
 
-function cart_drawerHide() {
-    // let iframe = document.getElementsByName('shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-active is-visible is-initialized');
-    // //shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-active is-visible is-initialized
-    // //shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart is-initialized
-    // if (iframe[0] = 'is-block') {
-    //     iframe[0].classList.replace('is-block','');
-    // }
-    // else {
-    //     iframe[0].classList.replace('','is-block');
-    // }
+function cart_drawerShow() {
+    var o = ".ajaxcart"; // adjust it accordingly
+    var e = "#CartContainer"; // adjust it accordingly
+    document.dispatchEvent(new CustomEvent("updateItemQuantity" + o, { detail: e }))
+
+    //console.log($('svg.shopify-buy__icon-cart.shopify-buy__icon-cart--side'));
+    let iframe = document.getElementsByName('frame-toggle');
+    iframe[0].classList.add('is-active');
+    iframe[0].style.width = '46px';
+    iframe[0].style.height = '68px';
+
+    let iframeToggle = document.getElementsByClassName('shopify-buy-frame shopify-buy-frame--toggle is-sticky');
+    iframeToggle[0].classList.add('is-active');
+
+    let iframeWrapper = document.getElementsByClassName('shopify-buy-cart-wrapper shopify-buy-frame shopify-buy-frame--cart');
+    iframeWrapper[0].classList.add('is-initialized');
+    iframeWrapper[0].classList.add('is-active');
+    iframeWrapper[0].classList.add('is-visible');
 }
 
 function cart_iconCountUpdate(quantity) {
     let iframe = document.getElementsByName('frame-toggle');
     // cart toggle icon
     let cartCountElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__cart-toggle__count');
-    cartCountElement[0].textContent = parseInt(cartCountElement[0].textContent) + parseInt(quantity);    
+    cartCountElement[0].textContent = parseInt(cartCountElement[0].textContent) + parseInt(quantity);
 }
 
-function cart_drawerCountUpdate(quantity) {    
-    let cartDrawerElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__quantity shopify-buy__cart-item__quantity-input');    
+function cart_drawerCountUpdate(quantity) {
+    let cartDrawerElement = iframe[0].contentDocument.getElementsByClassName('shopify-buy__quantity shopify-buy__cart-item__quantity-input');
     cartDrawerElement[0].value = parseInt(cartDrawerElement[0].value) + parseInt(quantity)
-}
-
-function cart_get(client) {
-    return new Promise((resolve, reject) => {
-        client.checkout.getAttribute().then(
-            (checkout) => {
-                let key = shopifyAccessToken + '.' + shopifyDomain + '.checkoutId';
-                let value = checkout.id
-                localStorage.setItem(key, value);
-                console.log('cart created');
-                resolve(checkout.id);
-            },
-            () => { console.log('unable to create cart '); reject(); })
-    })
 }
 
 function cart_create(client) {
@@ -306,11 +331,14 @@ function cart_delete() {
                 localStorage.removeItem(localStorage.key(i));
                 isCartExist = true;
                 console.log('cart deleted');
-                resolve(checkoutId);
-                break;
             }
         }
-        if (!isCartExist) { console.log('no cart to delete'); reject(); }
+        if (!isCartExist) {
+            console.log('no cart to delete');
+        }
+        else {
+            resolve(checkoutId);
+        }
     })
 }
 
@@ -375,7 +403,7 @@ function discount_apply(client, checkoutId, discountCode) {
 }
 
 function discount_clear(client, checkoutId, discountCode) {
-    return new Promise(() => {
+    return new Promise((resolve, reject) => {
         client.checkout.fetch(checkoutId).then(
             (checkout) => {
                 checkout.discountApplications.foreach((discountApplication) => {
@@ -386,7 +414,7 @@ function discount_clear(client, checkoutId, discountCode) {
                     }
                 })
             },
-            () => { console.log('unable to fetch checkout but should'); reject(); }
+            () => { console.log('unable to fetch checkout but should'); }
         );
     })
 }
@@ -402,8 +430,10 @@ function ruleQuantityForDiscount_isSatisfied(client, checkoutId, productId) {
                     }
                 });
                 console.log('found (' + quantityInCart + ') items in checkout');
-                if (quantityInCart > 1) { resolve(true); }
-                else { resolve(false); }
+                if (quantityInCart > 1) {
+                    resolve(true);
+                }
+                else { reject(); }
             },
             () => { console.log('unable to count line items but should'); reject(); }
         )
@@ -461,7 +491,15 @@ function item_isInCart(client, checkoutId, variantId) {
     })
 }
 
+function test(variantId, quantity) {
+    updateCart(clientReference, productId, variantId, quantity)
+    //cart_iconCountUpdate(quantity);
+    test();
+    cart_drawerShow();
+}
+
 function updateCart(client, productId, variantId, quantity) {
+    //cart_delete();
     cart_isExist().then(
         (checkoutId) => {
             item_isInCart(client, checkoutId, variantId)
@@ -472,8 +510,8 @@ function updateCart(client, productId, variantId, quantity) {
                     () => {
                         discount_isEligible(client, checkoutId, productId).then(
                             (eligible) => {
-                                if (eligible) { discount_apply(client, checkoutId, 'CANDYRACK-W7OJZQP91P'); console.log('discount applied') }
-                                else { discount_clear('CANDYRACK-W7OJZQP91P'); console.log('discount removed') }
+                                if (eligible) { discount_apply(client, checkoutId, discountCode); console.log('discount applied') }
+                                else { discount_clear(client, discountCode); console.log('discount removed') }
                             },
                             () => { console.log('discount not applied') }
                         );
@@ -481,6 +519,41 @@ function updateCart(client, productId, variantId, quantity) {
         },
         () => {
             cart_create(client).then(
-                (checkoutId) => { lineItem_add(client, checkoutId, variantId, quantity); resolve(); })
+                (checkoutId) => { lineItem_add(client, checkoutId, variantId, quantity); })
         })
+}
+
+function test() {
+    var firstChange = true;
+    function reloadCart() {
+        var target = document.querySelector(`[data-cart-subtotal]`);
+        if (!target) return
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (firstChange) {
+                    firstChange = false;
+                    return;
+                } else {
+                    firstChange = true;
+                    setTimeout(window.location.reload(), 1000);
+                }
+            });
+        });
+        var config = { attributes: true, childList: true, characterData: true };
+        observer.observe(target, config);
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        reloadCart();
+    });
+    selectElements = document.getElementsByClassName(`cart__qty-input`);
+    var allOne = true;
+    for (i = 0; i < selectElements.length; i++) {
+        if (selectElements[i].getAttribute("value") > 1) {
+            allOne = false;
+        }
+    }
+    //   console.log(allOne);
+    if (allOne == true) {
+        firstChange = false;
+    }
 }
