@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopify Buy Button</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <div style="background-color:antiquewhite; display:none;" id="myModal">
+        <form>
+            <label for="selectedVariantId">Variant</label>
+            <select name="selectedVariantId" id="selectedVariantId">
+                <option value="gid://shopify/ProductVariant/33353322397782">Black</option>
+                <option value="gid://shopify/ProductVariant/33358880309334">Red</option>
+                <option value="gid://shopify/ProductVariant/33353322463318">Teal</option>
+            </select>
+            <br><br>
+            <label for="selectedQuantity">Quantity:</label>
+            <input type="number" id="selectedQuantity" value="1"><br><br>
+        </form>
+        <button id="upsellButton" class="buybuttonjs-buy__btn">Upsell</button>
+        <br><br>
+    </div>
+
+    <div class="shopify-buy-frame shopify-buy-frame--product shopify-buy__layout-vertical"
+        style="max-width: 280px;">
+        <div id='product-component-1660181892298_1'></div>
+    </div>
+
+
+    <h1>BODY</h1>
+    <div id='product-component-1660181892298'></div>
+    <script src="shopify-script.js"></script>
+</body>
+
+</html>
