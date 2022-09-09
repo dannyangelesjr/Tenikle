@@ -61,8 +61,10 @@ function updatingItemQuantity(client, cart, checkoutId, discountCode) {
 
 function discount_eligibilityApplication(client, cart, checkoutId, productId, discountCode, quantity) {
     return new Promise((resolve, reject) => {
-        let isDiscountExist = discount_isExist(cart,discountCode);
+        let isDiscountExist = discount_isExist(cart, discountCode);
         let isDiscountEligible = discount_isEligible(cart, productId, discountCode, quantity)
+
+        checkoutId = cart.lineItems[0].id;
 
         if (isDiscountExist) {
             if (isDiscountEligible) {
@@ -80,10 +82,10 @@ function discount_eligibilityApplication(client, cart, checkoutId, productId, di
         else {
             if (isDiscountEligible) {
                 console.log('eligible for discount and discount not in cart. Adding');
-                discount_apply(client, checkoutId, discountCode)
-                console.log('discount added succesfully');
-                resolve(true);
-
+                discount_apply(client, checkoutId, discountCode).then((checkout) => {
+                    console.log('discount added succesfully ' + checkout.id);
+                    resolve(true);
+                })
             }
             else {
                 console.log('not eligible for discount and discount not in cart. Nothing to do');
@@ -116,15 +118,15 @@ function showModal() {
 function cart_get(client) {
     return new Promise((resolve, reject) => {
         console.log('retrieving checkoutId')
-        //let checkoutId = localStorage.getItem('checkoutId');
+        let checkoutId = localStorage.getItem('checkoutId');
 
-        for (var checkoutId, key, i = 0; i < localStorage.length; ++i) {
-            key = localStorage.key(i);
-            if (key.match(shopifyDomain + '.checkoutId')) {
-                console.log('found it!')
-                checkoutId = localStorage.getItem(key);                
-            }
-        }        
+        // for (var checkoutId, key, i = 0; i < localStorage.length; ++i) {
+        //     key = localStorage.key(i);
+        //     if (key.match(shopifyDomain + '.checkoutId')) {
+        //         console.log('found it!')
+        //         checkoutId = localStorage.getItem(key);                
+        //     }
+        // }        
 
         if (checkoutId != null) {
             console.log('awesome! found cart');
@@ -173,10 +175,12 @@ function discount_isEligible(cart, productId, discountCode, quantityToAddToCart)
 }
 
 function discount_apply(client, checkoutId, discountCode) {
-    
-    console.log('trying to add discount ' + checkoutId + ' ' + discountCode);
-    client.checkout.addDiscount(btoa(checkoutId), discountCode).then((checkout) => {        
-        console.log('added discount')
+    return new Promise((resolve, reject) => {
+        console.log('trying to add discount ' + checkoutId + ' ' + discountCode);
+
+        client.checkout.addDiscount(btoa(checkoutId), discountCode).then(
+            (checkout) => { console.log('added discount'); resolve(checkout); }),
+            (ex) => { console.log(ex); reject(); }
     })
 }
 
@@ -239,7 +243,7 @@ function updateView(client, checkoutId, productId) {
                             $productImage.style.width = '50px';
 
                             console.log('5. looping by discount allocation')
-                            for  (const discountAllocation of lineItem.discountAllocations) {
+                            for (const discountAllocation of lineItem.discountAllocations) {
                                 $productPriceAfterDiscount.textContent = '$ ' + Number(Number(lineItem.variant.priceV2.amount) - (Number(lineItem.variant.priceV2.amount) * (Number(discountAllocation.discountApplication.value.percentage) / 100))).toFixed(2) + ' ' + discountAllocation.allocatedAmount.currencyCode;
                             }
                             console.log('6. exit looping by discount allocation')
@@ -248,7 +252,7 @@ function updateView(client, checkoutId, productId) {
                         resolve();
                         console.log('8. update view resolve')
                     }
-                )
+                ).catch(ex => console.log('exception thrown ' + ex))
             })
     })
 }

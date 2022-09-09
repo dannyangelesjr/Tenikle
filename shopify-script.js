@@ -81,7 +81,7 @@ function ShopifyBuyInit() {
                         "Montserrat"
                     ],
                     "events": {
-                        afterInit: function () {
+                        afterRender: function () {
                             console.log('*** afterInit START');
                             cart_get(client).then(
                                 (checkoutId) => { _checkoutId = checkoutId, console.log('cart available and info retrieved'); console.log('*** afterInit END'); },
