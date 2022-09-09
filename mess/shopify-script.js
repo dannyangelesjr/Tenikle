@@ -200,9 +200,7 @@ function ShopifyBuyInit() {
                             openingCheckout(client, cart, _checkoutId, _discountCode);
                         },
                         updateItemQuantity: function (cart) {
-                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(
-                                console.log('updateItemQuantity done')
-                            )
+                            updatingItemQuantity(client, cart, _checkoutId, _discountCode)
                         },
                     },
                 },
@@ -280,8 +278,7 @@ function ShopifyBuyInit() {
                     ],
                     "events": {
                         addVariantToCart: function (product) {
-                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(() => { 
-                                console.log('*** addVariantToCart done') });
+                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(() => { console.log('*** addVariantToCart done') });
                         },
                         updateVariant: function (product) {
                             updatingVariant(client, _checkoutId, product, _discountCode).then(() => { console.log('*** updateVariant done') });

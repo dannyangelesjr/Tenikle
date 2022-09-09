@@ -9,7 +9,6 @@
             "request": "launch",
             "name": "Open index.html",
             "file": "c:\\Projects\\Tenikle\\index.html"
-            // "file": "c:\\Projects\\Tenikle\\backup\\old\\test.html"
         }
     ]
 }
