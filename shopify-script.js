@@ -33,7 +33,7 @@ function ShopifyBuyInit() {
     ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('product', {
             id: '4958989615190',
-            node: document.getElementById('product-component-1660181892296'),
+            node: document.getElementById('product-component-1660181892298'),
             moneyFormat: '%24%7B%7Bamount%7D%7D',
             options: {
                 "product": {
@@ -83,19 +83,22 @@ function ShopifyBuyInit() {
                     "events": {
                         afterInit: function () {
                             console.log('*** afterInit START');
-                            cart_get().then(
+                            cart_get(client).then(
                                 (checkoutId) => { _checkoutId = checkoutId, console.log('cart available and info retrieved'); console.log('*** afterInit END'); },
-                                () => { console.log('cart unavailable'); console.log('*** afterInit END'); }
+                                () => { console.log('cart missing'); console.log('*** afterInit END'); }
                             )
                         },
                         addVariantToCart: function (product) {
                             addingVariantToCart(client, _checkoutId, product, _discountCode).then(
-                                () => { 
-                                    console.log('*** addVariantToCart done') });
+                                () => {
+                                    console.log('*** addVariantToCart done')
+                                });
                         },
 
                         updateVariant: function (product) {
-                            updatingVariant(client, _checkoutId, product, _discountCode).then(() => { console.log('*** updateVariant done') });
+                            updatingVariant(client, _checkoutId, product, _discountCode).then(() => {
+                                console.log('*** updateVariant done')
+                            });
                         },
                     },
                 },
@@ -197,12 +200,14 @@ function ShopifyBuyInit() {
                     ],
                     "events": {
                         openCheckout: function (cart) {
-                            openingCheckout(client, cart, _checkoutId, _discountCode);
+                            openingCheckout(client, cart, _checkoutId, _discountCode).then(() => {
+                                console.log('openingCheckout done')
+                            });
                         },
                         updateItemQuantity: function (cart) {
-                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(
+                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(() => {
                                 console.log('updateItemQuantity done')
-                            )
+                            })
                         },
                     },
                 },
@@ -280,49 +285,16 @@ function ShopifyBuyInit() {
                     ],
                     "events": {
                         addVariantToCart: function (product) {
-                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(() => { 
-                                console.log('*** addVariantToCart done') });
+                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(
+                                () => {
+                                    console.log('*** addVariantToCart done')
+                                });
                         },
                         updateVariant: function (product) {
-                            updatingVariant(client, _checkoutId, product, _discountCode).then(() => { console.log('*** updateVariant done') });
-                        },
-                    },
-                },
-                "cart": {
-                    "styles": {
-                        "button": {
-                            "font-family": "Montserrat, sans-serif",
-                            "font-weight": "bold",
-                            "font-size": "18px",
-                            "padding-top": "17px",
-                            "padding-bottom": "17px",
-                            ":hover": {
-                                "background-color": "#e63844"
-                            },
-                            "background-color": "#ff3e4b",
-                            ":focus": {
-                                "background-color": "#e63844"
-                            },
-                            "border-radius": "15px"
-                        }
-                    },
-                    "text": {
-                        "total": "Subtotal",
-                        "button": "Checkout"
-                    },
-                    "contents": {
-                        "note": true
-                    },
-                    "popup": false,
-                    "googleFonts": [
-                        "Montserrat"
-                    ],
-                    "events": {
-                        openCheckout: function (cart) {
-                            openingCheckout(client, cart, _checkoutId, _discountCode);
-                        },
-                        updateItemQuantity: function (cart) {
-                            updatingItemQuantity(client, cart, _checkoutId, _discountCode)
+                            updatingVariant(client, _checkoutId, product, _discountCode).then(
+                                () => {
+                                    console.log('*** updateVariant done')
+                                });
                         },
                     },
                 },
