@@ -15,14 +15,11 @@ function addingVariantToCart(client, checkoutId, product, discountCode) {
 function updatingVariant(client, checkoutId, product, discountCode) {
     return new Promise((resolve, reject) => {
         console.log('*** updateVariant START');
-        discount_eligibilityApplication(client, product.cart, checkoutId, product.storefrontId, discountCode, product.selectedQuantity).then(() => {
-            updateView(client, checkoutId, product.storefrontId).then(
-                () => {
-                    showModal();
-                    resolve();
-                    console.log('*** updateVariant END');
-                }
-            )
+        discount_eligibilityApplication(client, product.cart, checkoutId, product.storefrontId, discountCode, product.selectedQuantity).then(
+            () => {updateView(client, checkoutId, product.storefrontId).then(
+                () => {showModal();resolve();console.log('*** updateVariant END');},
+                (ex) => {reject(ex)}),
+            (ex) => {reject(ex)}
         })
     })
 }
@@ -49,12 +46,9 @@ function updatingItemQuantity(client, cart, checkoutId, discountCode) {
         let x = 1;
         for (const lineItem of cart.lineItems) {
             console.log('checking discount eligibility for lineItem');
-            discount_eligibilityApplication(client, cart, checkoutId, lineItem.variant.product.id, discountCode, 0).then(() => {
-                if (x = cart.lineItems.length) {
-                    console.log('*** updateItemQuantity END');
-                    resolve();
-                }
-            })
+            discount_eligibilityApplication(client, cart, checkoutId, lineItem.variant.product.id, discountCode, 0).then(
+                () => {if (x = cart.lineItems.length) {console.log('*** updateItemQuantity END');resolve();}},
+                (ex) => {reject(ex);})
         }
     })
 }
@@ -64,8 +58,6 @@ function discount_eligibilityApplication(client, cart, checkoutId, productId, di
         let isDiscountExist = discount_isExist(cart, discountCode);
         let isDiscountEligible = discount_isEligible(cart, productId, discountCode, quantity)
 
-        checkoutId = cart.lineItems[0].id;
-
         if (isDiscountExist) {
             if (isDiscountEligible) {
                 console.log('eligible for discount and discount in cart. Nothing to do');
@@ -73,19 +65,19 @@ function discount_eligibilityApplication(client, cart, checkoutId, productId, di
             }
             else {
                 console.log('not eligible for discount and discount in cart. Removing');
-                discount_clear(client, checkoutId, discountCode).then(() => {
-                    console.log('discount cleared succesfully');
-                    resolve(true);
+                discount_clear(client, checkoutId, discountCode).then(
+                    () => {console.log('discount cleared succesfully');resolve(true);
+                    (ex) => {reject(ex)}
                 })
             }
         }
         else {
             if (isDiscountEligible) {
                 console.log('eligible for discount and discount not in cart. Adding');
-                discount_apply(client, checkoutId, discountCode).then((checkout) => {
-                    console.log('discount added succesfully ' + checkout.id);
-                    resolve(true);
-                })
+                discount_apply(client, checkoutId, discountCode).then((checkout) => {                
+                    () => {console.log('discount added succesfully?');
+                    resolve(true);}},
+                    (ex) => {reject(ex)})
             }
             else {
                 console.log('not eligible for discount and discount not in cart. Nothing to do');
@@ -118,13 +110,13 @@ function showModal() {
 function cart_get(client) {
     return new Promise((resolve, reject) => {
         console.log('retrieving checkoutId')
-        let checkoutId = localStorage.getItem('checkoutId');
+        let checkoutId = sessionStorage.getItem('checkoutId');
 
-        // for (var checkoutId, key, i = 0; i < localStorage.length; ++i) {
-        //     key = localStorage.key(i);
+        // for (var checkoutId, key, i = 0; i < sessionStorage.length; ++i) {
+        //     key = sessionStorage.key(i);
         //     if (key.match(shopifyDomain + '.checkoutId')) {
         //         console.log('found it!')
-        //         checkoutId = localStorage.getItem(key);                
+        //         checkoutId = sessionStorage.getItem(key);                
         //     }
         // }        
 
@@ -135,7 +127,7 @@ function cart_get(client) {
         else {
             console.log('cart not found. creating  one!');
             client.checkout.create().then((checkout) => {
-                localStorage.setItem('checkoutId', checkout.id);
+                sessionStorage.setItem('checkoutId', checkout.id);
                 console.log('cart created');
                 resolve(checkout.id);
             });
@@ -176,11 +168,10 @@ function discount_isEligible(cart, productId, discountCode, quantityToAddToCart)
 
 function discount_apply(client, checkoutId, discountCode) {
     return new Promise((resolve, reject) => {
-        console.log('trying to add discount ' + checkoutId + ' ' + discountCode);
-
-        client.checkout.addDiscount(btoa(checkoutId), discountCode).then(
-            (checkout) => { console.log('added discount'); resolve(checkout); }),
-            (ex) => { console.log(ex); reject(); }
+        console.log('trying to add discount ' + discountCode);
+        client.checkout.addDiscount(checkoutId, discountCode).then(
+            (checkout) => { console.log('added discount'); resolve(checkout); },
+            (ex) => { reject(ex); })
     })
 }
 

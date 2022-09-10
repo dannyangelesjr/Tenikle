@@ -33,7 +33,7 @@ function ShopifyBuyInit() {
     ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('product', {
             id: '4958989615190',
-            node: document.getElementById('product-component-1660181892298'),
+            node: document.getElementById('product-component-1660181892297'),
             moneyFormat: '%24%7B%7Bamount%7D%7D',
             options: {
                 "product": {
@@ -85,21 +85,21 @@ function ShopifyBuyInit() {
                             console.log('*** afterInit START');
                             cart_get(client).then(
                                 (checkoutId) => { _checkoutId = checkoutId, console.log('cart available and info retrieved'); console.log('*** afterInit END'); },
-                                () => { console.log('cart missing'); console.log('*** afterInit END'); }
+                                (ex) => { console.log('cart missing'); console.log('*** afterInit END exception ' + ex.message); }
                             )
                         },
                         addVariantToCart: function (product) {
                             addingVariantToCart(client, _checkoutId, product, _discountCode).then(
-                                () => {
-                                    console.log('*** addVariantToCart done')
-                                });
+                                () => { console.log('*** addVariantToCart done') },
+                                (ex) => { console.log('*** addVariantToCart exception ' + ex.message) }
+                            );
                         },
 
-                        updateVariant: function (product) {
-                            updatingVariant(client, _checkoutId, product, _discountCode).then(() => {
-                                console.log('*** updateVariant done')
-                            });
-                        },
+                        // updateVariant: function (product) {
+                        //     updatingVariant(client, _checkoutId, product, _discountCode).then(() => {
+                        //         console.log('*** updateVariant done')
+                        //     });
+                        // },
                     },
                 },
                 "productSet": {
@@ -205,9 +205,10 @@ function ShopifyBuyInit() {
                             });
                         },
                         updateItemQuantity: function (cart) {
-                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(() => {
-                                console.log('updateItemQuantity done')
-                            })
+                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(
+                                () => { console.log('updateItemQuantity done') },
+                                (ex) => { console.log('*** updateItemQuantity exception ' + ex.message) }
+                            )
                         },
                     },
                 },
@@ -236,7 +237,7 @@ function ShopifyBuyInit() {
         });
         ui.createComponent('product', {
             id: '4958989615190',
-            node: document.getElementById('product-component-1660181892297'),
+            node: document.getElementById('product-component-1660181892298'),
             moneyFormat: '%24%7B%7Bamount%7D%7D',
             options: {
                 "product": {
@@ -286,16 +287,15 @@ function ShopifyBuyInit() {
                     "events": {
                         addVariantToCart: function (product) {
                             addingVariantToCart(client, _checkoutId, product, _discountCode).then(
-                                () => {
-                                    console.log('*** addVariantToCart done')
-                                });
+                                () => { console.log('*** addVariantToCart done') }),
+                                (ex) => { console.log('*** addVariantToCart exception ' + ex.message) };
                         },
-                        updateVariant: function (product) {
-                            updatingVariant(client, _checkoutId, product, _discountCode).then(
-                                () => {
-                                    console.log('*** updateVariant done')
-                                });
-                        },
+                        // updateVariant: function (product) {
+                        //     updatingVariant(client, _checkoutId, product, _discountCode).then(
+                        //         () => {
+                        //             console.log('*** updateVariant done')
+                        //         });
+                        // },
                     },
                 },
             },
