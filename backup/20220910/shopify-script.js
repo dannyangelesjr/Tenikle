@@ -29,7 +29,14 @@ function ShopifyBuyInit() {
         domain: shopifyDomain,
         storefrontAccessToken: shopifyAccessToken,
     });
-    
+
+    // Fetch all collections, including their products
+    // client.collection.fetchAllWithProducts().then((collections) => {
+    //     // Do something with the collections
+    //     console.log(collections);
+    //     console.log(collections[0].products);
+    // });
+
     ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('product', {
             id: '4958989615190',
@@ -80,14 +87,26 @@ function ShopifyBuyInit() {
                     "googleFonts": [
                         "Montserrat"
                     ],
-                    "events": {                        
+                    "events": {
+                        afterRender: function () {
+                            console.log('*** afterInit START');
+                            cart_get(client).then(
+                                (checkoutId) => { _checkoutId = checkoutId, console.log('cart available and info retrieved'); console.log('*** afterInit END'); },
+                                (ex) => { console.log('cart missing'); console.log('*** afterInit END exception ' + ex.message); }
+                            )
+                        },
                         addVariantToCart: function (product) {
-                            console.log('*** addVariantToCart start')
-                            addingVariantToCart(client, product, _discountCode).then(
-                                () => { console.log('*** addVariantToCart end') },
+                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(
+                                () => { console.log('*** addVariantToCart done') },
                                 (ex) => { console.log('*** addVariantToCart exception ' + ex.message) }
                             );
-                        },                        
+                        },
+
+                        // updateVariant: function (product) {
+                        //     updatingVariant(client, _checkoutId, product, _discountCode).then(() => {
+                        //         console.log('*** updateVariant done')
+                        //     });
+                        // },
                     },
                 },
                 "productSet": {
@@ -193,11 +212,11 @@ function ShopifyBuyInit() {
                             });
                         },
                         updateItemQuantity: function (cart) {
-                            console.log('*** updatingItemQuantity start')
-                            updatingItemQuantity(client, cart, _discountCode).then(
-                                () => { console.log('*** updatingItemQuantity end') },
-                                (ex) => { console.log('*** updatingItemQuantity exception ' + ex.message) }
-                            );
+                            updateCart(client, cart.productId, cart.variantId,quantity);
+                            updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(
+                                () => { console.log('updateItemQuantity done') },
+                                (ex) => { console.log('*** updateItemQuantity exception ' + ex.message) }
+                            )
                         },
                     },
                 },
@@ -224,70 +243,70 @@ function ShopifyBuyInit() {
                 }
             },
         });
-        // ui.createComponent('product', {
-        //     id: '4958989615190',
-        //     node: document.getElementById('product-component-1660181892298'),
-        //     moneyFormat: '%24%7B%7Bamount%7D%7D',
-        //     options: {
-        //         "product": {
-        //             "buttonDestination": 'cart',
-        //             "styles": {
-        //                 "product": {
-        //                     "@media (min-width: 601px)": {
-        //                         "max-width": "calc(25% - 20px)",
-        //                         "margin-left": "20px",
-        //                         "margin-bottom": "50px"
-        //                     }
-        //                 },
-        //                 "button": {
-        //                     "font-family": "Montserrat, sans-serif",
-        //                     "font-weight": "bold",
-        //                     "font-size": "18px",
-        //                     "padding-top": "17px",
-        //                     "padding-bottom": "17px",
-        //                     ":hover": {
-        //                         "background-color": "#e63844"
-        //                     },
-        //                     "background-color": "#ff3e4b",
-        //                     ":focus": {
-        //                         "background-color": "#e63844"
-        //                     },
-        //                     "border-radius": "15px",
-        //                     "padding-left": "87px",
-        //                     "padding-right": "87px"
-        //                 },
-        //                 "quantityInput": {
-        //                     "font-size": "18px",
-        //                     "padding-top": "17px",
-        //                     "padding-bottom": "17px"
-        //                 }
-        //             },
-        //             "contents": {
-        //                 "img": false,
-        //                 "title": false,
-        //                 "price": false
-        //             },
-        //             "text": {
-        //                 "button": "Add to cart"
-        //             },
-        //             "googleFonts": [
-        //                 "Montserrat"
-        //             ],
-        //             "events": {
-        //                 addVariantToCart: function (product) {
-        //                     addingVariantToCart(client, _checkoutId, product, _discountCode).then(
-        //                         () => { console.log('*** addVariantToCart done') }),
-        //                         (ex) => { console.log('*** addVariantToCart exception ' + ex.message) };
-        //                 },
-        //                 // updateVariant: function (product) {
-        //                 //     updatingVariant(client, _checkoutId, product, _discountCode).then(
-        //                 //         () => {
-        //                 //             console.log('*** updateVariant done')
-        //                 //         });
-        //                 // },
-        //             },
-        //         },
-        //     },
-        // });
+        ui.createComponent('product', {
+            id: '4958989615190',
+            node: document.getElementById('product-component-1660181892298'),
+            moneyFormat: '%24%7B%7Bamount%7D%7D',
+            options: {
+                "product": {
+                    "buttonDestination": 'cart',
+                    "styles": {
+                        "product": {
+                            "@media (min-width: 601px)": {
+                                "max-width": "calc(25% - 20px)",
+                                "margin-left": "20px",
+                                "margin-bottom": "50px"
+                            }
+                        },
+                        "button": {
+                            "font-family": "Montserrat, sans-serif",
+                            "font-weight": "bold",
+                            "font-size": "18px",
+                            "padding-top": "17px",
+                            "padding-bottom": "17px",
+                            ":hover": {
+                                "background-color": "#e63844"
+                            },
+                            "background-color": "#ff3e4b",
+                            ":focus": {
+                                "background-color": "#e63844"
+                            },
+                            "border-radius": "15px",
+                            "padding-left": "87px",
+                            "padding-right": "87px"
+                        },
+                        "quantityInput": {
+                            "font-size": "18px",
+                            "padding-top": "17px",
+                            "padding-bottom": "17px"
+                        }
+                    },
+                    "contents": {
+                        "img": false,
+                        "title": false,
+                        "price": false
+                    },
+                    "text": {
+                        "button": "Add to cart"
+                    },
+                    "googleFonts": [
+                        "Montserrat"
+                    ],
+                    "events": {
+                        addVariantToCart: function (product) {
+                            addingVariantToCart(client, _checkoutId, product, _discountCode).then(
+                                () => { console.log('*** addVariantToCart done') }),
+                                (ex) => { console.log('*** addVariantToCart exception ' + ex.message) };
+                        },
+                        // updateVariant: function (product) {
+                        //     updatingVariant(client, _checkoutId, product, _discountCode).then(
+                        //         () => {
+                        //             console.log('*** updateVariant done')
+                        //         });
+                        // },
+                    },
+                },
+            },
+        });
     });
 }
