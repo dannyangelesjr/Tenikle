@@ -1,4 +1,4 @@
-const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';                   
 const shopifyDomain = 'tenikle.myshopify.com';
 const shopifyAccessToken = 'f4b463a7038ebe9367370e6e50c04b5e';
 
@@ -29,6 +29,13 @@ function ShopifyBuyInit() {
         domain: shopifyDomain,
         storefrontAccessToken: shopifyAccessToken,
     });
+
+    // Fetch all collections, including their products
+    // client.collection.fetchAllWithProducts().then((collections) => {
+    //     // Do something with the collections
+    //     console.log(collections);
+    //     console.log(collections[0].products);
+    // });
 
     ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('product', {
@@ -205,6 +212,7 @@ function ShopifyBuyInit() {
                             });
                         },
                         updateItemQuantity: function (cart) {
+                            updateCart(client, cart.productId, cart.variantId,quantity);
                             updatingItemQuantity(client, cart, _checkoutId, _discountCode).then(
                                 () => { console.log('updateItemQuantity done') },
                                 (ex) => { console.log('*** updateItemQuantity exception ' + ex.message) }
